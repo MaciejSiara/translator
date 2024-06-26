@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -29,13 +30,48 @@ kotlin {
     }
     
     sourceSets {
-        commonMain.dependencies {
-            //put your multiplatform dependencies here
-            implementation(libs.kotlinDateTime)
-
+        val commonMain by getting {
+            dependencies {
+                //put your multiplatform dependencies here
+                implementation(libs.kotlinDateTime)
+                implementation(libs.bundles.ktor)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.ktor.android)
+            }
+        }
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+
+            dependencies {
+                implementation(libs.ktor.ios)
+            }
+        }
+        val iosX64Test by getting
+        val iosArm64Test by getting
+        val iosSimulatorArm64Test by getting
+        val iosTest by creating {
+            dependsOn(commonTest)
+            iosX64Test.dependsOn(this)
+            iosArm64Test.dependsOn(this)
+            iosSimulatorArm64Test.dependsOn(this)
         }
     }
 }
