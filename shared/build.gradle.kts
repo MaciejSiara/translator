@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -35,6 +36,8 @@ kotlin {
                 //put your multiplatform dependencies here
                 implementation(libs.kotlinDateTime)
                 implementation(libs.bundles.ktor)
+                implementation(libs.sqldelight.runtime)
+                implementation(libs.sqldelight.coroutines.extensions)
             }
         }
         val commonTest by getting {
@@ -48,6 +51,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.ktor.android)
+                implementation(libs.sqldelight.android.driver)
             }
         }
 
@@ -62,6 +66,8 @@ kotlin {
 
             dependencies {
                 implementation(libs.ktor.ios)
+                implementation(libs.sqldelight.native.driver)
+
             }
         }
         val iosX64Test by getting
@@ -77,7 +83,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.example.translator"
+    namespace = "com.translator"
     compileSdk = 34
     defaultConfig {
         minSdk = 21
@@ -85,5 +91,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+sqldelight {
+    databases {
+        create("TranslateDatabase") {
+            packageName.set("com.translator.database")
+        }
     }
 }
